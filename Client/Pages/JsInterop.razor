@@ -1,0 +1,34 @@
+﻿@page "/"
+@inject IJSRuntime jsRuntime
+
+<h3>jsInterop</h3>
+
+<input @bind="@username" />
+<button type="button" class="btn btn-primary" @onclick="@setLocalStorage">Set Data in Local Storage</button>
+<br/>
+
+<p><h2>@nameof(username) : @storageItem</h2></p>
+
+
+
+@code 
+{
+
+    public string username { get; set; }
+    public string storageItem { get; set; }
+
+
+
+    public async Task setLocalStorage()
+    {
+        await jsRuntime.InvokeAsync<object>("interop.setItem", "username",username);
+        storageItem = getLocalStorage();
+    }
+
+    public string getLocalStorage()
+    {
+        //return await jsRuntime.InvokeAsync<string>("interop.getItem", nameof(username));
+        return ((IJSInProcessRuntime)jsRuntime).Invoke<string>("interop.getItem", nameof(username));
+    }
+
+}
